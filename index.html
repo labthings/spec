@@ -2,23 +2,28 @@
 <html>
   <head>
     <meta charset='utf-8'>
-    <title>Web Thing API</title>
+    <title>Lab Things API</title>
     <script
-     src='https://www.w3.org/Tools/respec/respec-w3c-common'
-     class='remove'></script>
+      src='https://www.w3.org/Tools/respec/respec-w3c-common'
+      class='remove'></script>
     <script class='remove'>
       var respecConfig = {
-        specStatus: "unofficial",
-        editors: [{
+        specStatus: "base",
+        editors: [
+          {
+            name: "Joel Collins",
+            company: "University of Bath",
+            companyURL: "https://www.bath.ac.uk/",
+          },
+          {
           name: "Ben Francis",
           company: "Mozilla Corporation",
           companyURL: "https://mozilla.com/",
           w3cid: 51527
         }],
         processVersion: 2018,
-        edDraftURI: "https://iot.mozilla.org/wot/",
+        edDraftURI: "https://spec.labthings.org/",
         shortName: "WoT",
-        overrideCopyright: 'Copyright © 2017 Mozilla',
         localBiblio: {
           "web-linking": {
             title: "Web Linking",
@@ -45,6 +50,7 @@
     </style>
   </head>
   <body>
+    <p class="copyright">Copyright © 2017 Mozilla</p>
     <section id='abstract'>
       <p>This document describes a common data model and API for the Web of Things. The <a href="#web-thing-description">Web Thing Description</a> provides a vocabulary for describing physical devices connected to the World Wide Web in a machine readable format with a default JSON encoding. Common device capabilities can be specified using optional <a href="#context-member">semantic annotations</a>. The <a href="#web-thing-rest-api">Web Thing REST API</a> and <a href="#web-thing-websocket-api">Web Thing WebSocket API</a> allow a web client to access the properties of devices, request the execution of actions and subscribe to events representing a change in state..</p>
     </section>
