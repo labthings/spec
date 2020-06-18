@@ -582,12 +582,8 @@ POST https://mythingserver.com/things/lamp/actions/fade
 Accept: application/json
 
 {
-  "fade": {
-    "input": {
-      "level": 50,
-      "duration": 2000
-    }
-  }
+  "level": 50,
+  "duration": 2000
 }
       </pre>
       <pre class="example" title="Response to creating an action request">
@@ -708,16 +704,12 @@ Accept: application/json
 200 OK
 [
   {
-    "overheated": {
-      "data": 102,
-      "timestamp": "2017-01-25T15:01:35+00:00"
-    }
+    "data": 102,
+    "timestamp": "2017-01-25T15:01:35+00:00"
   },
   {
-    "overheated": {
-      "data": 101,
-      "timestamp": "2017-01-24T13:02:45+00:00"
-    }
+    "data": 101,
+    "timestamp": "2017-01-24T13:02:45+00:00"
   }
 ]
 </pre>
