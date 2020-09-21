@@ -297,7 +297,7 @@ Accept: application/json</pre>
 }</pre>
       </div>
     </section>
-    <section>
+    <section> <!--Properties resource-->
       <h3><code>Properties</code> resource</h3>
       <p>A properties resource represents all the properties of a device. The value of all properties can be retrieved
         with an HTTP GET request.</p>
@@ -323,7 +323,7 @@ Accept: application/json</pre>
 }</pre>
       </div>
     </section>
-    <section>
+    <section> <!--Property resource-->
       <h3><code>Property</code> resource</h3>
       <p>A property resource represents a single property of a device. Some property resources may be read only and some
         may be writable. The value of a property can be retrieved with an HTTP GET request and updated with an HTTP PUT
@@ -366,7 +366,7 @@ true
 </pre>
       </div>
     </section>
-    <section>
+    <section> <!--Actions resource-->
       <h3><code>Actions</code> resource</h3>
       <p>An actions resource represents a queue of actions to be executed on a device. A new action is created in the
         queue with an HTTP POST request and a list of action requests in the queue can be requested with an HTTP GET
@@ -436,7 +436,7 @@ Accept: application/json
 ]
       </pre>
     </section>
-    <section>
+    <section> <!--Action resource-->
       <h3><code>Action</code> resource</h3>
       <p>An action resource represents a queue of actions of a single action type. A new action is created in the queue
         with an HTTP POST request and a list of action requests in the queue can be requested with an HTTP GET request.
@@ -506,7 +506,7 @@ Accept: application/json
 ]
       </pre>
     </section>
-    <section>
+    <section> <!--Action Request resource-->
       <h3><code>ActionRequest</code> resource</h3>
       <p>An action request resource represents an individual action request for a given action. The current status of an
         action request can be retrieved with an HTTP GET request, updated with an HTTP PUT request and deleted with an
@@ -541,7 +541,7 @@ DELETE /things/lamp/actions/fade/123e4567-e89b-12d3-a456-426655
 204 No Content
       </pre>
     </section>
-    <section>
+    <section> <!--Events resource-->
       <h3><code>Events</code> resource</h3>
       <p>An events resource provides a log of all events recently emitted by a device. An events resource is usually
         read only.</p>
@@ -569,7 +569,7 @@ Accept: application/json
 ]
 </pre>
     </section>
-    <section>
+    <section> <!--Event resource-->
       <h3><code>Event</code> resource</h3>
       <p>An event resource provides a log of events recently emitted by a device for a particular event type. An event
         resource is usually read only.</p>
@@ -593,68 +593,6 @@ Accept: application/json
   }
 ]
 </pre>
-    </section>
-    <section>
-      <h3><code>Things</code> resource</h3>
-      <p>A things resource represents a collection of web things exposed by a particular Web of Things server. This
-        resource is not needed for individual web things, for which the Thing Description is the entry point. It is used
-        only by Web of Things gateways and services which expose a directory of web things.</p>
-      <p><strong>Example: Get a list of things</strong></p>
-      <div class="example">
-        <div class="example-title marker">
-          Request
-        </div>
-        <pre>GET /things
-Accept: application/json</pre>
-      </div>
-      <div class="example">
-        <div class="example-title marker">
-          Response
-        </div>
-        <pre>200 OK
-[
-  {
-    "id": "https://mywebthingserver.com/things/pi",
-    "title": "WoT Pi",
-    "description": "A WoT-connected Raspberry Pi",
-    "properties": {
-      "temperature": {
-        "title": "Temperature",
-        "type": "number",
-        "unit": "degree celsius",
-        "readOnly": true,
-        "description": "An ambient temperature sensor",
-        "links": [{"href": "/things/pi/properties/temperature"}]
-      },
-      "humidity": {
-        "title": "Humidity",
-        "type": "number",
-        "unit": "percent",
-        "readOnly": true,
-        "links": [{"href": "/things/pi/properties/humidity"}]
-      },
-      "led": {
-        "title": "LED",
-        "type": "boolean",
-        "description": "A red LED",
-        "links": [{"href": "/things/pi/properties/led"}]
-      }
-    },
-    "actions": {
-      "reboot": {
-        "title": "Reboot",
-        "description": "Reboot the device"
-      }
-    },
-    "events": {
-      "reboot": {
-        "description": "Going down for reboot"
-      }
-    },
-    "href": "/things/pi"
-  }
-]</pre>
-      </div>
     </section>
     <section>
       <h3>Alternative Protocol Bindings</h3>
