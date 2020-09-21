@@ -1,5 +1,5 @@
 # Web of Things
 
-A draft W3C member submission by Mozilla's IoT team to propose a data model and API for the Web of Things.
+A draft specification for the Lab Things API structure.
 
-Latest version hosted [here](http://iot.mozilla.org/wot/).
+Latest version hosted [here](http://spec.labthings.org).
