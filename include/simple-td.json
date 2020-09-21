@@ -1,0 +1,35 @@
+{
+  "id": "bme280",
+  "title": "BME280 Weather Sensor",
+  "@context": ["https://www.w3.org/2019/wot/td/v1"],
+  "base": "http://192.168.178.70/",
+  "securityDefinitions": {
+    "nosec_sc": {
+      "scheme": "nosec"
+    }
+  },
+  "security": "nosec_sc",
+  "properties": {
+    "humidity": {
+      "type": "number",
+      "unit": "percent",
+      "links": [{
+        "href": "/properties/humidity"
+      }]
+    },
+    "pressure": {
+      "type": "number",
+      "unit": "hPa",
+      "links": [{
+        "href": "/properties/pressure"
+      }]
+    },
+    "temperature": {
+      "type": "number",
+      "unit": "celsius",
+      "links": [{
+        "href": "/properties/temperature"
+      }]
+    }
+  }
+}
