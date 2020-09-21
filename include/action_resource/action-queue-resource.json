@@ -1,0 +1,22 @@
+[
+  {
+    "action": "fade",
+    "input": {
+      "level": 50,
+      "duration": 2000
+    },
+    "href": "/actions/fade/123e4567-e89b-12d3-a456-426655",
+    "status": "pending",
+    "output": null
+  },
+  {
+    "action": "fade",
+    "input": {
+      "level": 0,
+      "duration": 500
+    },
+    "href": "/actions/fade/f80876a3-8d18-49c6-aefc-46a520",
+    "status": "completed",
+    "output": null
+  }
+]

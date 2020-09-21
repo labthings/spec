@@ -4,7 +4,7 @@
 <head>
   <meta charset='utf-8'>
   <title>Lab Things API</title>
-  <script src='https://www.w3.org/Tools/respec/respec-w3c-common' class='remove'></script>
+  <script src="https://www.w3.org/Tools/respec/respec-w3c" class="remove" defer></script>
   <script class='remove'>
     var respecConfig = {
       specStatus: "base",
@@ -56,10 +56,10 @@
   <p class="copyright">Copyright © 2017 Mozilla</p>
   <section id='abstract'>
     <p>This document describes a common data model and API for the LabThings devices. The <a
-        href="#web-thing-description">Web Thing Description</a> provides a vocabulary for describing physical devices
+        href="#thing-description">Thing Description</a> provides a vocabulary for describing physical devices
       connected to the World Wide Web in a machine readable format with a default JSON encoding. Common device
       capabilities can be specified using optional <a href="#context-member">semantic annotations</a>. The <a
-        href="#web-thing-rest-api">Web Thing REST API</a> and <a href="#web-thing-websocket-api">Web Thing WebSocket
+        href="#rest-api">REST API</a> and <a href="#websocket-api">WebSocket
         API</a> allow a web client to access the properties of devices, request the execution of actions and subscribe
       to events representing a change in state.</p>
   </section>
@@ -101,123 +101,41 @@
         href="https://iot.mozilla.org/wot/">Mozilla's Web Thing API</a>.</p>
   </section>
   <section>
-    <h2>Web Thing Description</h2>
-    <p>LabThings devices must use a standard W3C Web of Things Thing Description as per [[!wot-thing-description]].</p>
+    <h2>Thing Description</h2>
+    <p>LabThings devices must use a standard W3C Web of Things Thing Description as per [[WOT-THING-DESCRIPTION]].</p>
     <p>The Thing Description provides a vocabulary for describing physical devices connected to the World Wide Web in a
       machine readable format with a default JSON encoding.</p>
-    <pre class="example" title="A simple Thing Description">
-{
-  "id": "https://mywebthingserver.com/things/switch",
-  "title": "On/Off Switch",
-  "description": "A web connected switch",
-  "properties": {
-    "on": {
-      "title": "On/Off",
-      "type": "boolean",
-      "description": "Whether the lamp is turned on",
-      "links": [{"href": "/things/switch/properties/on"}]
-    }
-  }
-}
-        </pre>
-    <pre class="example" title="A more complex Thing Description with semantic annotations">{
-  "@context": "https://iot.mozilla.org/schemas/",
-  "@type": ["Light", "OnOffSwitch"],
-  "id": "https://mywebthingserver.com/things/lamp",
-  "title": "My Lamp",
-  "description": "A web connected lamp",
-  "properties": {
-    "on": {
-      "@type": "OnOffProperty",
-      "type": "boolean",
-      "title": "On/Off",
-      "description": "Whether the lamp is turned on",
-      "links": [{"href": "/things/lamp/properties/on"}]
-    },
-    "brightness" : {
-      "@type": "BrightnessProperty",
-      "type": "integer",
-      "title": "Brightness",
-      "description": "The level of light from 0-100",
-      "minimum" : 0,
-      "maximum" : 100,
-      "links": [{"href": "/things/lamp/properties/brightness"}]
-    }
-  },
-  "actions": {
-    "fade": {
-      "@type": "FadeAction",
-      "title": "Fade",
-      "description": "Fade the lamp to a given level",
-      "input": {
-        "type": "object",
-        "properties": {
-          "level": {
-            "type": "integer",
-            "minimum": 0,
-            "maximum": 100
-          },
-          "duration": {
-            "type": "integer",
-            "minimum": 0,
-            "unit": "milliseconds"
-          }
-        }
-      },
-      "links": [{"href": "/things/lamp/actions/fade"}]
-    }
-  },
-  "events": {
-    "overheated": {
-      "title": "Overheated",
-      "@type": "OverheatedEvent",
-      "type": "number",
-      "unit": "degree celsius",
-      "description": "The lamp has exceeded its safe operating temperature",
-      "links": [{"href": "/things/lamp/events/overheated"}]
-    }
-  },
-  "links": [
-    {
-      "rel": "properties",
-      "href": "/things/lamp/properties"
-    },
-    {
-      "rel": "actions",
-      "href": "/things/lamp/actions"
-    },
-    {
-      "rel": "events",
-      "href": "/things/lamp/events"
-    },
-    {
-      "rel": "alternate",
-      "href": "wss://mywebthingserver.com/things/lamp"
-    },
-    {
-      "rel": "alternate",
-      "mediaType": "text/html",
-      "href": "/things/lamp"
-    }
-  ]
-}
-</pre>
+    <pre class="example" title="A simple Thing Description" data-include="include/simple-td.json"></pre>
+    <pre class="example" title="A more complex Thing Description with semantic annotations"
+      data-include="include/complex-td.json"></pre>
+
+    <section>
+      <h3><code>@context</code> member</h3>
+      <p>
+        The <code>@context</code> member is an optional annotation which can be used to provide a URI for a schema repository which defines standard schemas for common "types" of device capabilities. These types can then be referred to
+        using <code>@type</code> annotations elsewhere in the Thing Description.
+      </p>
+      <div class="note">Example experimental schema repositories can be found at <a href="http://iotschema.org/">http://iotschema.org/</a> and <a href="https://iot.mozilla.org/schemas">https://iot.mozilla.org/schemas</a>.</div>
+      <div class="note">The Lab Things project will eventually introduce a laboratory-focused schema repository. This specification document will be updated accordingly.</div>
+      <pre class="example" title="Example @context member">"@context": ["https://www.w3.org/2019/wot/td/v1", "https://iot.mozilla.org/schemas"]</pre>
+    </section>
+
   </section>
   <section>
-    <h2>Lab Thing REST API</h2>
+    <h2>REST API</h2>
     <p>The Web Thing API provides a web services based programming interface with a RESTful design for applications to
       access the properties of devices, request the execution of actions and access a list of events representing a
-      change in state. A default HTTP [[!HTTP11]] protocol binding is defined here.</p>
+      change in state. A default HTTP [[HTTP11]] protocol binding is defined here.</p>
     <p>The Web Thing REST API consists of a number of different types of resources which represent different aspects of
       a device and can be independently referenced by a URL. The specific URLs and URL structure of resources are
-      defined by the Thing Description. This specification does <strong>not</strong> define a fixed URL structure.</p>
+      defined by the Thing Description.</p>
+    <p>This specification does <strong>not</strong> define a fixed URL structure.</p>
     <section>
       <h3><code>Thing</code> resource</h3>
-      <p>A thing Resource provides a <a href="#web-thing-description">Thing Description</a> for a device. A Thing
+      <p>A thing Resource provides a <a href="#thing-description">Thing Description</a> for a device. A Thing
         Resource is considered the root resource of a Thing.</p>
-      <p>The URL of a Thing Resource may be enumerated by the <code>href</code> member of Thing object in a <a
-          href="#things-resource">Things Resource</a> provided by a gateway or directory, or may be discovered by some
-        other means.</p>
+      <p>The URL of a Thing Resource may be enumerated by a gateway or directory, or may be discovered by some other
+        means.</p>
       <p>A Thing description is usually read only. An HTTP GET request can be used to retrieve a Thing Description for a
         Thing.</p>
       <p><strong>Example: Get a description of a Thing</strong></p>
@@ -233,68 +151,8 @@ Accept: application/json</pre>
           <span>Response</span>
         </div>
         <pre>200 OK
-{
-  "id": "https://mywebthingserver.com/things/pi",
-  "title": "WoT Pi",
-  "description": "A WoT-connected Raspberry Pi",
-  "properties": {
-    "temperature": {
-      "title": "Temperature",
-      "type": "number",
-      "unit": "degree celsius",
-      "readOnly": true,
-      "description": "An ambient temperature sensor",
-      "links": [{"href": "/things/pi/properties/temperature"}]
-    },
-    "humidity": {
-      "title": "Humidity",
-      "type": "number",
-      "unit": "percent",
-      "readOnly": true,
-      "links": [{"href": "/things/pi/properties/humidity"}]
-    },
-    "led": {
-      "title": "LED",
-      "type": "boolean",
-      "description": "A red LED",
-      "links": [{"href": "/things/pi/properties/led"}]
-    }
-  },
-  "actions": {
-    "reboot": {
-      "title": "Reboot",
-      "description": "Reboot the device"
-    }
-  },
-  "events": {
-    "reboot": {
-      "description": "Going down for reboot"
-    }
-  },
-  "links": [
-    {
-      "rel": "properties",
-      "href": "/things/pi/properties"
-    },
-    {
-      "rel": "actions",
-      "href": "/things/pi/actions"
-    },
-    {
-      "rel": "events",
-      "href": "/things/pi/events"
-    },
-    {
-      "rel": "alternate",
-      "href": "wss://mywebthingserver.com/things/pi"
-    },
-    {
-      "rel": "alternate",
-      "mediaType": "text/html",
-      "href": "/things/pi"
-    }
-  ]
-}</pre>
+          <div data-include="include/simple-td.json"></div>
+        </pre>
       </div>
     </section>
 
@@ -304,8 +162,8 @@ Accept: application/json</pre>
       <p>A property resource represents a single property of a device. Some property resources may be read only and some
         may be writable. The value of a property can be retrieved with an HTTP GET request and updated with an HTTP PUT
         request.</p>
-      <p>The URL of a Property resource can be defined by the <code>links</code> section of a <a
-          href="#property-object">Property object</a> in a Thing Description.</p>
+      <p>The URL of a Property resource must be defined by the <code>forms</code> section of a Property object in a Thing
+        Description.</p>
       <p>If a Property object does not define a primitive <code>type</code> it may not have a JSON serialisation and may
         instead return a binary file or stream in response to an HTTP GET request (e.g. an image file or video stream).
       <p><strong>Example: Get a property</strong></p>
@@ -347,8 +205,7 @@ true
       <h3><code>Properties</code> resource</h3>
       <p>A properties resource represents all the properties of a device. The value of all properties can be retrieved
         with an HTTP GET request.</p>
-      <p>The URL of a Properties resource can be defined by a <code>properties</code> link relation in the <a
-          href="#links-member"><code>links</code> member</a> of a Thing Description.</p>
+      <p>The URL of a Properties resource can be defined by a <code>properties</code> link relation in the <code>links</code> member of a Thing Description.</p>
       <p><strong>Example: Get all properties</strong></p>
       <div class="example">
         <div class="example-title marker">
@@ -376,13 +233,16 @@ Accept: application/json</pre>
       <p>An action resource represents a queue of actions of a single action type. A new action is created in the queue
         with an HTTP POST request and a list of action requests in the queue can be requested with an HTTP GET request.
       </p>
-      <p>The URL of an Action resource can be defined by the <code>links</code> section of an <a
-          href="#action-object">Action object</a> in a Thing Description.</p>
+      <p>The URL of an Action resource must be defined by the <code>links</code> section of an Action object in a Thing Description.</p>
       <p>If a client tries to request an action of another type via this resource, the server should respond with a
         <code>400 Bad Request</code> response.</p>
+
+      <p>If an action request is successful, the server should respond with a <code>201 Created</code>
+        response, containing an <a href="#actionrequest-resource">ActionRequest resource</a> in the response body.</p>
+
       <p><strong>Action Request</strong></p>
       <pre class="example" title="Request an action">
-POST https://mythingserver.com/things/lamp/actions/fade
+POST https://mythingserver.com/actions/fade
 Accept: application/json
 
 {
@@ -390,55 +250,18 @@ Accept: application/json
   "duration": 2000
 }
       </pre>
-      <pre class="example" title="Response to creating an action request">
-201 Created
-
-{
-  "fade": {
-    "input": {
-      "level": 50,
-      "duration": 2000
-    },
-    "href": "/things/lamp/actions/fade/123e4567-e89b-12d3-a456-426655"
-    "status": "pending",
-    "output": null
-  }
-}
+      <pre class="example" title="Response to creating an action request">201 Created
+        <div data-include="include/action_resource/actionRequest-resource.json"></div>
       </pre>
+
       <p><strong>Action Queue</strong></p>
       <pre class="example" title="Get a list of all action requests for a given action">
-GET /things/lamp/actions/fade
+GET /actions/fade
 Accept: application/json
       </pre>
-      <pre class="example" title="Action list response">
-200 OK
-[
-  {
-    "fade": {
-      "input": {
-        "level": 50,
-        "duration": 2000
-      },
-      "href": "/things/lamp/actions/fade/123e4567-e89b-12d3-a456-426655",
-      "timeRequested": "2017-01-25T15:01:35+00:00",
-      "status": "pending",
-      "output": null
-    }
-  },
-  {
-    "fade": {
-      "input": {
-        "level": 100,
-        "duration": 2000
-      },
-      "href": "/things/lamp/actions/fade/123e4567-e89b-12d3-a456-426655",
-      "timeRequested": "2017-01-24T11:02:45+00:00",
-      "timeCompleted": "2017-01-24T11:02:46+00:00",
-      "status": "completed",
-      "output": {}
-    }
-  }
-]
+
+      <pre class="example" title="Action list response">200 OK
+        <div data-include="include/action_resource/action-queue-resource.json"></div>
       </pre>
     </section>
 
@@ -450,29 +273,23 @@ Accept: application/json
         HTTP DELETE request.</p>
       <p>The URL of an Action request resource can be defined by the <code>href</code> member of an action request
         object in an action queue.</p>
+
+      <p>An ActionRequest object should conform to the following JSON schema:</p>
+      <pre title="ActionResource schema" data-include="include/action_resource/schema.json"></pre>
+
       <p><strong>Action Request Status</strong></p>
       <pre class="example" title="Get the status of an action request">
-GET /things/lamp/actions/fade/123e4567-e89b-12d3-a456-426655
+GET /actions/fade/123e4567-e89b-12d3-a456-426655
 Accept: application/json
       </pre>
-      <pre class="example" title="Action request status response">
-200 OK
-{
-  "fade": {
-    "input": {
-      "level": 50,
-      "duration": 2000
-    },
-    "href": "/things/lamp/actions/fade/123e4567-e89b-12d3-a456-426655",
-    "timeRequested": "2017-01-25T15:01:35+00:00",
-    "status": "pending",
-    "output": null
-  }
-}
+
+      <pre class="example" title="Action request status response">200 OK
+        <div data-include="include/action_resource/actionRequest-resource.json"></div>
       </pre>
+
       <p><strong>Cancel an Action Request</strong></p>
       <pre class="example" title="Cancel an action request response">
-DELETE /things/lamp/actions/fade/123e4567-e89b-12d3-a456-426655
+DELETE /actions/fade/123e4567-e89b-12d3-a456-426655
       </pre>
       <pre class="example" title="Action cancellation response">
 204 No Content
@@ -484,13 +301,12 @@ DELETE /things/lamp/actions/fade/123e4567-e89b-12d3-a456-426655
       <p>An actions resource represents a queue of actions to be executed on a device. A new action is created in the
         queue with an HTTP POST request and a list of action requests in the queue can be requested with an HTTP GET
         request.</p>
-      <p>The URL of an actions resource can be defined by an <code>actions</code> link relation in the <a
-          href="#links-member"><code>links</code> member</a> of a Thing Description.</p>
+      <p>The URL of an actions resource can be defined by an <code>actions</code> link relation in the <code>links</code> member of a Thing Description.</p>
       <p>Any action supported by the thing can be requested via this top level action queue. If an unsupported action
         type is requested, the server should respond with a <code>400 Bad Request</code> response.</p>
       <p><strong>Action Request</strong></p>
       <pre class="example" title="Request an action">
-POST https://mythingserver.com/things/lamp/actions/
+POST https://mythingserver.com/actions/
 Accept: application/json
 
 {
@@ -502,51 +318,16 @@ Accept: application/json
   }
 }
       </pre>
-      <pre class="example" title="Response to creating an action request">
-201 Created
-
-{
-  "fade": {
-    "input": {
-      "level": 50,
-      "duration": 2000
-    },
-    "href": "/things/lamp/actions/fade/123e4567-e89b-12d3-a456-426655",
-    "status": "pending",
-    "output": null
-  }
-}
+      <pre class="example" title="Response to creating an action request">201 Created
+        <div data-include="include/action_resource/actionRequest-resource.json"></div>
       </pre>
       <p><strong>Actions Queue</strong></p>
       <pre class="example" title="Get a list of all action requests">
-GET /things/lamp/actions
+GET /actions
 Accept: application/json
       </pre>
-      <pre class="example" title="Action list response">
-200 OK
-[
-  {
-    "fade": {
-      "input": {
-        "level": 50,
-        "duration": 2000
-      },
-      "href": "/things/lamp/actions/fade/123e4567-e89b-12d3-a456-426655",
-      "timeRequested": "2017-01-25T15:01:35+00:00",
-      "status": "pending",
-      "output": null
-    }
-  },
-  {
-    "reboot": {
-      "href": "/things/lamp/actions/reboot/124e4568-f89b-22d3-a356-427656",
-      "timeRequested": "2017-01-24T13:13:33+00:00",
-      "timeCompleted": "2017-01-24T13:15:01+00:00",
-      "status": "completed",
-      "output": null
-    }
-  }
-]
+      <pre class="example" title="Action list response">200 OK
+        <div data-include="include/action_resource/actions-queue-resource.json"></div>
       </pre>
     </section>
 
@@ -555,52 +336,51 @@ Accept: application/json
       <h3><code>Event</code> resource</h3>
       <p>An event resource provides a log of events recently emitted by a device for a particular event type. An event
         resource is usually read only.</p>
-      <p>The URL of an Event resource can be defined by the <code>links</code> section of an <a
-          href="#event-object">Event object</a> in a Thing Description.</p>
+      <p>The URL of an Event resource must be defined by the <code>forms</code> section of an Event object in a Thing Description.</p>
       <p><strong>Event Log</strong></p>
       <pre class="example" title="Event Request">
-GET /things/lamp/events/overheated
+GET /events/overheated
 Accept: application/json
       </pre>
       <pre class="example" title="Event Response">
 200 OK
 [
   {
+    "event": "overheated",
     "data": 102,
     "timestamp": "2017-01-25T15:01:35+00:00"
   },
   {
+    "event": "overheated",
     "data": 101,
     "timestamp": "2017-01-24T13:02:45+00:00"
   }
 ]
 </pre>
+
     </section>
     <section>
       <!--Events resource-->
       <h3><code>Events</code> resource</h3>
       <p>An events resource provides a log of all events recently emitted by a device. An events resource is usually
         read only.</p>
-      <p>The URL of an Events resource can be defined by an <code>events</code> link relation in the <a
-          href="#links-member"><code>links</code> member</a> of a Thing Description.</p>
+      <p>The URL of an Events resource can be defined by an <code>events</code> link relation in the <code>links</code> member of a Thing Description.</p>
       <p><strong>Event Log</strong></p>
       <pre class="example" title="Events Request">
-GET /things/lamp/events
+GET /events
 Accept: application/json
       </pre>
       <pre class="example" title="Events Response">
 200 OK
 [
   {
-    "overheated": {
-      "data": 102,
-      "timestamp": "2017-01-25T15:01:35+00:00"
-    }
+    "event": "overheated",
+    "data": 102,
+    "timestamp": "2017-01-25T15:01:35+00:00"
   },
   {
-    "reboot": {
-      "timestamp": "2017-01-24T13:02:45+00:00"
-    }
+    "event": "reboot",
+    "timestamp": "2017-01-24T13:02:45+00:00"
   }
 ]
 </pre>
@@ -611,17 +391,21 @@ Accept: application/json
         protocols (e.g. CoAP) may be used, but these bindings are beyond the scope of this specification. A Web Thing
         API protocol binding may also be layered on top of a non-Internet application protocol by use of a gateway.</p>
     </section>
+    <section>
+      <h3>Alternative Encodings</h3>
+      <p>The default content encoding for the Web Thing HTTP(S) REST API is JSON. Alternative content encodings (e.g. CBOR) may be used, but these bindings are beyond the scope of this specification.</p>
+    </section>
   </section>
   <section>
-    <h2>Web Thing WebSocket API</h2>
+    <h2>WebSocket API</h2>
     <p>The Web Thing WebSocket API complements the REST API to provide a realtime mechanism to make multiple requests
-      and be notified of events as soon as they happen, by keeping a WebSocket [[!WEBSOCKETS-PROTOCOL]] open on the Web
+      and be notified of events as soon as they happen, by keeping a WebSocket [[WEBSOCKETS-PROTOCOL]] open on the Web
       Thing. The "webthing" WebSocket subprotocol defined here has a simple set of message types and a JSON response
       format consistent with the Web Thing REST API.</p>
     <section>
       <h3>Protocol Handshake</h3>
       <p>To open a WebSocket on a Thing, an HTTP GET request is upgraded to a WebSocket using a standard WebSocket
-        protocol handshake [[!WEBSOCKETS-PROTOCOL]] and the "webthing" subprotocol. The WebSocket URL for a Web Thing is
+        protocol handshake [[WEBSOCKETS-PROTOCOL]] and the "webthing" subprotocol. The WebSocket URL for a Web Thing is
         specified in the links member of the Web Thing Description.</p>
       <div class="example">
         <div class="example-title marker">
@@ -687,7 +471,9 @@ Sec-WebSocket-Protocol: webthing</pre>
         <pre>{
   "messageType": "requestAction",
   "data": {
-    "goForward": {},
+    "goForward": {
+      "steps": 100
+    },
   }
 }</pre>
       </div>
@@ -741,11 +527,16 @@ Sec-WebSocket-Protocol: webthing</pre>
   "messageType": "actionStatus",
   "data": {
     "grab": {
-      "href": "/actions/grab/123e4567-e89b-12d3-a456-426655",
-      "status": "completed",
-      "output": {},
+      "action": "goForward",
+      "id": "123e4567-e89b-12d3-a456-426655",
+      "href": "/actions/go-forward/123e4567-e89b-12d3-a456-426655",
       "timeRequested": "2017-01-24T11:02:45+00:00",
-      "timeCompleted": "2017-01-24T11:02:46+00:00"
+      "timeCompleted": "2017-01-24T11:02:46+00:00",
+      "status": "completed",
+      "input": {
+        "steps": 100
+      },
+      "output": {},
     }
   }
 }</pre>

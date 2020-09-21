@@ -1,0 +1,40 @@
+{
+  "type": "object",
+  "description": "Description of an ActionRequest",
+  "properties": {
+    "action": {
+      "type": "string",
+      "description": "Name of the Action resource requested"
+    },
+    "id": {
+      "type": "string",
+      "description": "Unique ID for the ActionRequest resource"
+    },
+    "href": {
+      "type": "string",
+      "format": "uri",
+      "description": "Link to this ActionRequest resource"
+    },
+    "timeRequested": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Time the Action was requested"
+    },
+    "timeCompleted": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Time the ActionRequest ended (in success, cancellation, or error)"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["pending", "running", "completed", "cancelled", "error"],
+      "description": "Current status of the action"
+    },
+    "output": {
+      "description": "Optional data returned by the ActionRequest"
+    },
+    "input": {
+      "description": "A record of the input parameters passed in the Action Request"
+    }
+  }
+}

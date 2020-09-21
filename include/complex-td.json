@@ -1,0 +1,170 @@
+{
+  "id": "urn:dev:ops:my-lamp-1234",
+  "title": "My Lamp",
+  "@context": ["https://www.w3.org/2019/wot/td/v1", "https://iot.mozilla.org/schemas"],
+  "properties": {
+    "on": {
+      "@type": "OnOffProperty",
+      "title": "On/Off",
+      "type": "boolean",
+      "description": "Whether the lamp is turned on",
+      "forms": [{
+        "op": "readproperty",
+        "href": "/properties/on",
+        "contentType": "application/json",
+        "htv:methodName": "GET"
+      }, {
+        "op": "writeproperty",
+        "href": "/properties/on",
+        "contentType": "application/json",
+        "htv:methodName": "PUT"
+      }]
+    },
+    "brightness": {
+      "@type": "BrightnessProperty",
+      "title": "Brightness",
+      "type": "integer",
+      "description": "The level of light from 0-100",
+      "minimum": 0,
+      "maximum": 100,
+      "unit": "percent",
+      "forms": [{
+        "op": "readproperty",
+        "href": "/properties/brightness",
+        "contentType": "application/json",
+        "htv:methodName": "GET"
+      }, {
+        "op": "writeproperty",
+        "href": "/properties/brightness",
+        "contentType": "application/json",
+        "htv:methodName": "PUT"
+      }]
+    },
+    "color": {
+      "@type": "ColorProperty",
+      "title": "Color",
+      "type": "string",
+      "description": "The color of light in RGB",
+      "forms": [{
+        "op": "readproperty",
+        "href": "/properties/color",
+        "contentType": "application/json",
+        "htv:methodName": "GET"
+      }, {
+        "op": "writeproperty",
+        "href": "/properties/color",
+        "contentType": "application/json",
+        "htv:methodName": "PUT"
+      }]
+    }
+  },
+  "actions": {
+    "fade": {
+      "title": "Fade",
+      "description": "Fade the lamp to a given level",
+      "input": {
+        "type": "object",
+        "required": ["brightness", "duration"],
+        "properties": {
+          "brightness": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100,
+            "unit": "percent"
+          },
+          "duration": {
+            "type": "integer",
+            "minimum": 1,
+            "unit": "milliseconds"
+          }
+        }
+      },
+      "output": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "id": {
+            "type": "string"
+          },
+          "href": {
+            "type": "string",
+            "format": "uri"
+          },
+          "timeRequested": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "timeCompleted": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "status": {
+            "type": "string",
+            "enum": ["pending", "running", "completed", "cancelled", "error"]
+          },
+          "output": {
+            "type": "string"
+          },
+          "input": {
+            "type": "object",
+            "required": ["brightness", "duration"],
+            "properties": {
+              "brightness": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 100,
+                "unit": "percent"
+              },
+              "duration": {
+                "type": "integer",
+                "minimum": 1,
+                "unit": "milliseconds"
+              }
+            }
+          }
+        }
+      },
+      "forms": [{
+        "op": "invokeaction",
+        "href": "/actions/fade",
+        "htv:methodName": "POST"
+      }]
+    }
+  },
+  "events": {
+    "overheated": {
+      "description": "The lamp has exceeded its safe operating temperature",
+      "type": "number",
+      "unit": "degree celsius",
+      "forms": [{
+        "op": "subscribeevent",
+        "href": "/events/overheated",
+        "subprotocol": "longpoll"
+      }]
+    }
+  },
+  "links": [{
+    "rel": "properties",
+    "href": "/properties"
+  }, {
+    "rel": "actions",
+    "href": "/actions"
+  }, {
+    "rel": "events",
+    "href": "/events"
+  }, {
+    "rel": "alternate",
+    "href": "ws://localhost:8888/"
+  }],
+  "description": "A web connected lamp",
+  "@type": ["OnOffSwitch", "Light"],
+  "base": "http://192.168.178.70/",
+  "securityDefinitions": {
+    "nosec_sc": {
+      "scheme": "nosec"
+    }
+  },
+  "security": "nosec_sc"
+}

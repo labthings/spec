@@ -1,0 +1,13 @@
+{
+  "action": "fade",
+  "id": "123e4567-e89b-12d3-a456-426655",
+  "href": "/actions/fade/123e4567-e89b-12d3-a456-426655",
+  "timeRequested": "2017-01-24T13:20:00+00:00",
+  "timeCompleted": null,
+  "status": "pending",
+  "input": {
+    "level": 50,
+    "duration": 2000
+  },
+  "output": null
+}
